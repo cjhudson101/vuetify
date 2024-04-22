@@ -91,3 +91,60 @@
 .v-navigation-drawer__append
   flex: none
   overflow: hidden
+
+
+.v-navigation-drawer--resizable
+  container-name: v-navigation-drawer--resizable
+  container-type: inline-size
+
+  .v-navigation-drawer
+    &__handle
+      &-container
+      align-items: center
+      cursor: grab
+      display: flex
+      justify-content: center
+      position: absolute
+      z-index: 1
+
+      &-position
+        &-top
+          top: 0
+
+        &-center
+          top: 50%
+          transform: translateY(-50%)
+
+        &-bottom
+          bottom: 0
+
+        &-border
+          cursor: move
+          height: 8px
+          left: unset
+          width: 100%
+
+      &-icon
+        &-parent
+          &-end,
+          &-right
+            left: initial
+            right: 0
+
+        &-center
+          &-end,
+          &-right
+            transform: rotate(180deg)
+
+        &-user-icon
+          transform: none
+
+      &-parent
+        &-left,
+        &-start,
+        &-undefined
+          right: 0
+
+        &-end,
+        &-right
+          left: 0
