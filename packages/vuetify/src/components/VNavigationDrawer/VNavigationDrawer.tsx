@@ -2,6 +2,7 @@
 import './VNavigationDrawer.sass'
 
 // Components
+import { VNavigationDrawerHandle } from './VNavigationDrawerHandle'
 import { VDefaultsProvider } from '@/components/VDefaultsProvider'
 import { VImg } from '@/components/VImg'
 
@@ -31,6 +32,7 @@ import { genericComponent, propsFactory, toPhysical, useRender } from '@/util'
 
 // Types
 import type { PropType } from 'vue'
+import type { IconValue } from '@/composables/icons'
 
 export type VNavigationDrawerImageSlot = {
   image: string | undefined
@@ -40,8 +42,11 @@ export type VNavigationDrawerSlots = {
   default: never
   prepend: never
   append: never
+  handle: never
   image: VNavigationDrawerImageSlot
 }
+
+export type HandlePosition = 'bottom' | 'border' | 'center' | 'top';
 
 const locations = ['start', 'end', 'left', 'right', 'top', 'bottom'] as const
 
@@ -81,6 +86,40 @@ export const makeVNavigationDrawerProps = propsFactory({
     validator: (value: any) => locations.includes(value),
   },
   sticky: Boolean,
+
+  // ! RESIZE PROPS ! //
+  handleBorderWidth: {
+    type: [String, Number],
+    default: 8,
+  },
+  handleColor: {
+    type: String,
+    default: 'primary',
+  },
+  handleIcon: {
+    type: String as PropType<IconValue | undefined>,
+    default: 'mdi:mdi-chevron-double-right',
+  },
+  handlePosition: {
+    type: String as PropType<HandlePosition>,
+    default: 'center',
+  },
+  handleSize: {
+    type: String,
+    default: 'x-small',
+  },
+  minWidth: {
+    type: [Number, String],
+    default: 256,
+  },
+  maxWidth: {
+    type: [Number, String],
+    default: 256,
+  },
+  resizable: {
+    type: Boolean as PropType<boolean | null>,
+    default: null,
+  },
 
   ...makeBorderProps(),
   ...makeComponentProps(),
@@ -132,6 +171,13 @@ export const VNavigationDrawer = genericComponent<VNavigationDrawerSlots>()({
       !isTemporary.value &&
       location.value !== 'bottom'
     )
+    const showHandle = computed(() => {
+      if ((!props.resizable || props.rail) || (props.touchless && mobile.value)) {
+        return false
+      }
+
+      return props.resizable
+    })
 
     useToggleScope(() => props.expandOnHover && props.rail != null, () => {
       watch(isHovering, val => emit('update:rail', !val))
@@ -211,6 +257,8 @@ export const VNavigationDrawer = genericComponent<VNavigationDrawerSlots>()({
     useRender(() => {
       const hasImage = (slots.image || props.image)
 
+      // console.log(props)
+
       return (
         <>
           <props.tag
@@ -228,6 +276,7 @@ export const VNavigationDrawer = genericComponent<VNavigationDrawerSlots>()({
                 'v-navigation-drawer--temporary': isTemporary.value,
                 'v-navigation-drawer--active': isActive.value,
                 'v-navigation-drawer--sticky': isSticky.value,
+                'v-navigation-drawer--resizable': props.resizable,
               },
               themeClasses.value,
               backgroundColorClasses.value,
@@ -274,6 +323,18 @@ export const VNavigationDrawer = genericComponent<VNavigationDrawerSlots>()({
                   />
                 )}
               </div>
+            )}
+
+            { showHandle.value && (
+              <VNavigationDrawerHandle
+                borderWidth={ props.handleBorderWidth }
+                color={ props.handleColor }
+                icon={ props.handleIcon }
+                iconSize={ props.handleSize }
+                key="handle"
+                parentLocation={ location.value }
+                position={ props.handlePosition }
+              />
             )}
 
             { slots.prepend && (
