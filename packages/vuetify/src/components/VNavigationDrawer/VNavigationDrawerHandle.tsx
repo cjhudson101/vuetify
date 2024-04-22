@@ -135,7 +135,7 @@ export const VNavigationDrawerHandle = genericComponent<VNavigationDrawerHandleS
               'v-navigation-drawer__handle-container',
               `v-navigation-drawer__handle-position-${props.position}`,
               `v-navigation-drawer__handle-parent-${props.parentLocation}`,
-              // backgroundColor.value,
+              backgroundColor.value,
             ]}
             onClick={ handleClick }
             onDblclick={ handleDoubleClick }
